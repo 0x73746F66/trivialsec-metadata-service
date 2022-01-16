@@ -1,0 +1,144 @@
+variables:
+  GITLAB_USER: ci
+  TRIVIALSEC_PY_LIB_VER: 0.9.0
+  APP_ENV: Prod
+  APP_NAME: trivialsec
+  BUILD_ENV: production
+  AWS_REGION: ap-southeast-2
+  AWS_ACCOUNT: 984310022655
+  LINODE_FIREWALL: 13219
+
+before_script:
+  - touch .env
+  - make --version
+  - terraform --version
+  - aws --version
+  - docker --version
+  - pylint --version
+  - echo semgrep $(semgrep --version)
+
+stages:
+  - tests
+  - build
+  - deploy
+
+test:sast:
+  tags:
+    - linode
+  stage: tests
+  script:
+    - make semgrep-sast-ci
+  only:
+    refs:
+      - merge_request
+      - main
+  artifacts:
+    name: sast-results
+    paths:
+      - semgrep-ci.json
+
+test:xss:
+  tags:
+    - linode
+  stage: tests
+  script:
+    - make semgrep-xss-ci
+  only:
+    refs:
+      - merge_request
+      - main
+  artifacts:
+    name: xss-results
+    paths:
+      - semgrep-flask-xss.json
+
+test:lint:
+  tags:
+    - linode
+  stage: tests
+  script:
+    - make pylint-ci
+  only:
+    refs:
+      - merge_request
+      - main
+  artifacts:
+    name: lint-results
+    paths:
+      - pylint.json
+
+build:docker:
+  tags:
+    - linode
+  stage: build
+  script:
+    - make docker-login
+    - make build-ci
+  only:
+    refs:
+      - merge_request
+      - main
+
+push:docker:
+  tags:
+    - linode
+  stage: deploy
+  script:
+    - make docker-login
+    - make push-ci
+  only:
+    refs:
+      - main
+
+tf:plan:
+  tags:
+    - linode
+  stage: build
+  script:
+    - make plan
+  only:
+    refs:
+      - merge_request
+      - main
+  artifacts:
+    name: "tf:plan"
+    paths:
+      - plans/.tfplan
+    reports:
+      terraform: plans/tfplan.json
+
+tf:apply:
+  tags:
+    - linode
+  stage: deploy
+  script:
+    - make apply
+  only:
+    refs:
+      - main
+  environment:
+    name: linode
+    url: https://cloud.linode.com/search/?query=label:prd-main.trivialsec.com
+    on_stop: "tf:destroy"
+  dependencies:
+    - "tf:plan"
+  when: manual
+
+tf:destroy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  tags:
+    - linode
+  script:
+    - make destroy
+  when: manual
+  environment:
+    name: linode
+    action: stop
+  artifacts:
+    name: "tf:destroy"
+    paths:
+      - plans/.tfdestroy
+    reports:
+      terraform: plans/tfdestroy.json

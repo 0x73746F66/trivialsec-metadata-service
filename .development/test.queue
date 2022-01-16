@@ -1,0 +1,18 @@
+{
+  "job_uuid": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "queued_by_member_id": 1,
+  "on_demand": true,
+  "is_passive": true,
+  "is_active": false,
+  "service_type": {
+    "type_id": 15,
+    "name": "metadata",
+    "category": "crawler"
+  },
+  "domain": "apple.com",
+  "timings": {
+    "started_at": "2021-12-31T11:51:00",
+    "completed_at": null
+  },
+  "report_summary": null
+}

@@ -1,0 +1,38 @@
+{
+    "Records": [
+      {
+        "eventVersion": "2.1",
+        "eventSource": "aws:s3",
+        "awsRegion": "ap-southeast-2",
+        "eventTime": "2021-12-31T11:51:00.976Z",
+        "eventName": "ObjectCreated:Put",
+        "userIdentity": {
+          "principalId": "AWS:AROA6KLLTAH7UPMCB2F3T:chris@trivialsec.com"
+        },
+        "requestParameters": {
+          "sourceIPAddress": "180.150.30.218"
+        },
+        "responseElements": {
+          "x-amz-request-id": "PY0VW78P539K3KXE",
+          "x-amz-id-2": "Ngoa8ePYrtuvWRONPCh95FwkwapKP9kmmyEms1O/3Fs8imumg0KAABeO9szx2d/P5vJRkV+tZlg91yTJy0AVVxko2IsKURSN"
+        },
+        "s3": {
+          "s3SchemaVersion": "1.0",
+          "configurationId": "tf-s3-lambda-20211231065758685200000001",
+          "bucket": {
+            "name": "assets-trivialsec",
+            "ownerIdentity": {
+              "principalId": "AZSHVQMG8WNFI"
+            },
+            "arn": "arn:{partition}:s3:::assets-trivialsec"
+          },
+          "object": {
+            "key": "metadata-service/test.queue",
+            "size": 48,
+            "eTag": "f5e6545b7a7a14f56ef6aa4dfef8619e",
+            "sequencer": "0061CEEEA4E6D7FEAF"
+          }
+        }
+      }
+    ]
+  }
